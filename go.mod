@@ -1,4 +1,4 @@
-module github.com/LainIwakuras-father/selectel-test-lint
+module github.com/LainIwakuras-father/loglint
 
 go 1.25.6
 
