@@ -85,3 +85,19 @@ func extract(pass *analysis.Pass, msg ast.Expr) {
 		pass.ReportRangef(msg, "message should be a string literal or a constant")
 	}
 }
+
+func extractMessage(pass *analysis.Pass, call *ast.CallExpr) (string, token.Pos, bool) {
+	if len(call.Args) == 0 {
+		return "", token.NoPos, false
+	}
+	lit, ok := call.Args[0].(*ast.BasicLit)
+	if !ok || lit.Kind != token.STRING {
+		return "", token.NoPos, false
+	}
+	// Убираем кавычки
+	str := lit.Value
+	if len(str) >= 2 {
+		str = str[1 : len(str)-1]
+	}
+	return str, lit.Pos(), true
+}

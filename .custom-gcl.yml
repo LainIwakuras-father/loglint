@@ -1,0 +1,6 @@
+version: v1
+
+plugins:
+  - module: github.com/LainIwakuras-father/loglint
+    import: github.com/LainIwakuras-father/loglint/pkg/analyzer
+    version: main   # или branch/tag/coommit

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/tools/godoc/analysis"
+	"golang.org/x/tools/go/analysis"
 )
 
 // hasSensitiveKeywords проверяет, содержит ли строка ключевые слова (регистронезависимо).
@@ -45,9 +45,9 @@ func containsSensitiveConcat(pass *analysis.Pass, expr ast.Expr) bool {
 		if e.Op != token.ADD {
 			return false
 		}
-		if !isStringType(pass, e.X) || !isStringType(pass, e.Y) {
-			return false
-		}
+		//if !isStringType(pass, e.X) || !isStringType(pass, e.Y) {
+		//	return false
+		//}
 		return containsSensitiveConcat(pass, e.X) || containsSensitiveConcat(pass, e.Y)
 
 	case *ast.BasicLit:

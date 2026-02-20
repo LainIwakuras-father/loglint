@@ -1,0 +1,9 @@
+version: "2"
+linters:
+  settings:
+    custom:
+      loglinter:
+        path: ./loglinter.so
+        description: "Log message linter"
+        original-url: github.com/LainIwakuras-father/loglint
+
