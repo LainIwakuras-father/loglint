@@ -1,4 +1,4 @@
-package analyzer
+package analyzer // или как у тебя пакет называется
 
 import (
 	"github.com/golangci/plugin-module-register/register"
@@ -6,23 +6,26 @@ import (
 )
 
 func init() {
-	register.Plugin("myanalyzer", New)
+	register.Plugin("loglint", New) // имя линтера, которое потом enable в .golangci.yml
 }
 
-type settings struct {
-	// сюда можно принимать настройки из .golangci.yml
-	ExtraMessage string `json:"extra-message"`
+type myPlugin struct{} // ← любое имя, главное — private или exported
+
+var _ register.LinterPlugin = (*myPlugin)(nil) // проверка, что реализуем интерфейс
+
+func New(settings any) (register.LinterPlugin, error) {
+	// здесь можно распарсить settings, если нужны настройки из .golangci.yml
+	return &myPlugin{}, nil
 }
 
-func New(conf any) (register.LinterPlugin, error) {
-	//	var s settings
-	// парсинг конфига (опционально)
-	// ...
-
-	return register.LinterPlugin{
-		Analyzers:   []*analysis.Analyzer{Analyzer},
-		Name:        "myanalyzer",
-		Description: "Запрещает голые panic",
-		// Config:         s,  // если нужны настройки
+func (p *myPlugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
+	return []*analysis.Analyzer{
+		Analyzer, // ← твой анализатор(-ы)
 	}, nil
+}
+
+// Опционально: если нужны настройки
+func (p *myPlugin) GetLoadMode() string {
+	// парсинг, если нужно
+	return register.LoadModeTypesInfo
 }
