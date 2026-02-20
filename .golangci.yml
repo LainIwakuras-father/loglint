@@ -1,9 +1,11 @@
 version: "2"
+
 linters:
+  default: none
+  enable:
+    - loglint
   settings:
     custom:
-      loglinter:
-        path: ./loglinter.so
-        description: "Log message linter"
-        original-url: github.com/LainIwakuras-father/loglint
-
+      loglint:
+        type: "module"
+        description: This is an logging usage of a plugin linter.

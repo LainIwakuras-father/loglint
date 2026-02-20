@@ -1,31 +1,36 @@
-package analyzer // или как у тебя пакет называется
+package analyzer
 
 import (
 	"github.com/golangci/plugin-module-register/register"
 	"golang.org/x/tools/go/analysis"
 )
 
+// ← Это основной файл плагина для golangci-lint
 func init() {
-	register.Plugin("loglint", New) // имя линтера, которое потом enable в .golangci.yml
+	register.Plugin("loglint", New) // имя линтера должно совпадать с тем, что enable в .golangci.yml
+	// или "loglint" — как хочешь, но一致но
 }
 
-type myPlugin struct{} // ← любое имя, главное — private или exported
+type plugin struct{} // ← любое имя, часто просто plugin или linterPlugin
 
-var _ register.LinterPlugin = (*myPlugin)(nil) // проверка, что реализуем интерфейс
+// Явная проверка реализации интерфейса (очень полезно)
+var _ register.LinterPlugin = (*plugin)(nil)
 
 func New(settings any) (register.LinterPlugin, error) {
-	// здесь можно распарсить settings, если нужны настройки из .golangci.yml
-	return &myPlugin{}, nil
+	// settings — это map[string]any из .golangci.yml → linters-settings.custom.addlint
+	// если настройки не нужны — просто игнорируем
+	return &plugin{}, nil
 }
 
-func (p *myPlugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
+func (p *plugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
 	return []*analysis.Analyzer{
-		Analyzer, // ← твой анализатор(-ы)
+		Analyzer, // ← именно эта переменная!
 	}, nil
 }
 
-// Опционально: если нужны настройки
-func (p *myPlugin) GetLoadMode() string {
-	// парсинг, если нужно
+func (p *plugin) GetLoadMode() string {
+	// Самый распространённый и достаточный вариант для 90% линтеров
 	return register.LoadModeTypesInfo
+	// Если нужен только синтаксис (быстрее) → register.LoadModeSyntax
+	// Если очень сложный анализ → register.LoadModeFull (медленно)
 }
